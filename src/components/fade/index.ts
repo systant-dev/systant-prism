@@ -1,0 +1,5 @@
+export { afterFade } from './afterFade'
+export { Fade } from './Fade'
+export type { FadeProps } from './Fade'
+export type { FadeMode } from './useLayers'
+export { fadeStyles } from './fade.styles'

@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "verbatimModuleSyntax": true,
+    "erasableSyntaxOnly": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "types": ["@webgpu/types"]
+  },
+  "include": [
+    "src",
+    "demo",
+    "test/gpu/check.ts",
+    "vite.config.ts",
+    "vite.demo.config.ts",
+    "vite.wgsl.ts",
+    "vite.css.ts",
+    "vite.pictures.ts"
+  ]
+}

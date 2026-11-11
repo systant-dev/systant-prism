@@ -1,0 +1,40 @@
+#!/bin/sh
+# Before a push: the backdrop on the real GPU (npm run gpu, test/gpu/run.mjs), for each
+# branch pushed whose src has changed from what the remote has.
+#
+# A shader the GPU refuses fails nothing else: GlassBackdrop quietly shows the scene's
+# picture instead. So this stops the push if a scene won't build, the GPU reports an
+# error, or a render is black. Pixels that differ from the remote's are only reported,
+# with pictures of where under .gpu-check/diffs, as a change can be meant.
+#
+# It tests the commit being pushed, not the working tree. Where it can't run (no Chrome
+# or Edge, no WebGPU) it says so and lets the push go. `git push --no-verify` skips it.
+# Git uses it once told to: git config core.hooksPath .githooks
+
+status=0
+while read -r local_ref local_sha remote_ref remote_sha; do
+  # A branch being deleted pushes no commit.
+  case $local_sha in *[!0]*) ;; *) continue ;; esac
+
+  # Compared with what the remote has, if it has it; a new branch is only built and rendered.
+  against=none
+  case $remote_sha in *[!0]*)
+    if git cat-file -e "$remote_sha^{commit}" 2>/dev/null; then
+      git diff --quiet "$remote_sha" "$local_sha" -- src && continue
+      against=$remote_sha
+    fi
+    ;;
+  esac
+
+  echo "pre-push: checking ${local_ref#refs/heads/} on the GPU (git push --no-verify skips it)"
+  node test/gpu/run.mjs --tree "$local_sha" --against "$against" --report-changes </dev/null
+  case $? in
+    0) ;;
+    2) echo "pre-push: the GPU check couldn't run here, so the push goes ahead unchecked" ;;
+    *)
+      echo "pre-push: something above is broken, so the push is stopped"
+      status=1
+      ;;
+  esac
+done
+exit $status

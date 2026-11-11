@@ -1,0 +1,48 @@
+# Builds the demo (npm run build:demo, vite.demo.config.ts) and puts it on GitHub Pages
+# each time main changes, or when run by hand from the Actions tab.
+#
+# Pages must be told once to take its site from here: Settings > Pages > Build and
+# deployment > Source: GitHub Actions.
+name: Deploy demo to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# What the deploy needs: to read the repository, to publish to Pages, and to prove to
+# Pages which workflow it is.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time. One under way is left to finish, so the site is never half put up.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 26
+          cache: npm
+      - run: npm ci
+      - run: npm run build:demo
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist-demo
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

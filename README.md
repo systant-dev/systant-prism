@@ -1,5 +1,7 @@
 # systant-prism
 
+[![npm version](https://img.shields.io/npm/v/@systant/prism)](https://www.npmjs.com/package/@systant/prism)
+
 Glass components for React 19.2 or later: cards, buttons, inputs, menus, a calendar, a data grid and animated backgrounds. Their surfaces are translucent, with rims and highlights that respond to the pointer, and inside a `GlassBackdrop` they blur and bend the image behind them.
 
 ```bash
